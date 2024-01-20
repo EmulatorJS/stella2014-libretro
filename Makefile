@@ -1,4 +1,5 @@
 DEBUG = 0
+EMULATORJS_THREADS ?= 0
 
 ifeq ($(platform),)
 platform = unix
@@ -328,6 +329,11 @@ else ifeq ($(platform), classic_armv7_a7)
 else ifeq ($(platform), emscripten)
 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
 	STATIC_LINKING = 1
+	ifeq ($(EMULATORJS_THREADS), 1)
+		LDFLAGS += -pthread
+		CFLAGS += -pthread
+		CXXFLAGS += -pthread
+	endif
 
 # GCW0
 else ifeq ($(platform), rs90)
