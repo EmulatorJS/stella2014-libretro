@@ -17,8 +17,6 @@
 // $Id: System.cxx 2838 2014-01-17 23:34:03Z stephena $
 //============================================================================
 
-#include <iostream>
-
 #include "Device.hxx"
 #include "M6502.hxx"
 #include "M6532.hxx"
@@ -233,17 +231,6 @@ void System::poke(uInt16 addr, uInt8 value)
   }
 
   myDataBusState = value;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 System::getAccessFlags(uInt16 addr)
-{
-  return 0;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void System::setAccessFlags(uInt16 addr, uInt8 flags)
-{
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

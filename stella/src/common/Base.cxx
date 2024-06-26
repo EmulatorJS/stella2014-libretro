@@ -23,21 +23,6 @@
 namespace Common {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Base::setHexUppercase(bool enable)
-{
-  if(enable)
-  {
-    myHexflags |= std::ios_base::uppercase;
-    myFmt = Base::myUpperFmt;
-  }
-  else
-  {
-    myHexflags &= ~std::ios_base::uppercase;
-    myFmt = Base::myLowerFmt;
-  }
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 string Base::toString(int value, Common::Base::Format outputBase)
 {
   static char vToS_buf[32];
@@ -101,14 +86,8 @@ string Base::toString(int value, Common::Base::Format outputBase)
 Base::Format Base::myDefaultBase = Base::F_16;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::ios_base::fmtflags Base::myHexflags = std::ios_base::hex;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const char* Base::myLowerFmt[4] = {
   "%1x", "%02x", "%04x", "%08x"
-};
-const char* Base::myUpperFmt[4] = {
-  "%1X", "%02X", "%04X", "%08X"
 };
 const char** Base::myFmt = Base::myLowerFmt;
 

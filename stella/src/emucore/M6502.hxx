@@ -21,7 +21,6 @@
 #define M6502_HXX
 
 class M6502;
-class Debugger;
 class CpuDebug;
 class Expression;
 class PackedBitArray;
@@ -50,10 +49,6 @@ typedef Common::Array<Expression*> ExpressionList;
 */
 class M6502 : public Serializable
 {
-  // The 6502 and Cart debugger classes are friends who need special access
-  friend class CartDebug;
-  friend class CpuDebug;
-
   public:
     /**
       Create a new 6502 microprocessor with the specified cycle 
@@ -112,14 +107,6 @@ class M6502 : public Serializable
     */
     void stop() { myExecutionStatus |= StopExecutionBit; }
 
-    /**
-      Answer true iff a fatal error has occured from which the processor
-      cannot recover (i.e. illegal instruction, etc.)
-
-      @return true iff a fatal error has occured
-    */
-    bool fatalError() const { return myExecutionStatus & FatalErrorBit; }
-  
     /**
       Get the 16-bit value of the Program Counter register.
 

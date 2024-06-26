@@ -21,7 +21,6 @@
 #include <cmath>
 
 #include "TIASnd.hxx"
-#include "FrameBuffer.hxx"
 #include "Settings.hxx"
 #include "System.hxx"
 #include "OSystem.hxx"
@@ -66,8 +65,7 @@ void Sound::open()
 
   // Now initialize the TIASound object which will actually generate sound
   myTIASound.outputFrequency(31400);
-  const string& chanResult =
-      myTIASound.channels(2, myNumChannels == 2);
+  myTIASound.channels(2, myNumChannels == 2);
 
   // Adjust volume to that defined in settings
   myVolume = myOSystem->settings().getInt("volume");
@@ -146,11 +144,6 @@ void Sound::setChannels(uInt32 channels)
 {
   if(channels == 1 || channels == 2)
     myNumChannels = channels;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Sound::setFrameRate(float framerate)
-{
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -306,19 +299,6 @@ void Sound::processFragment(Int16* stream, uInt32 length)
 //            }
 //        }
 //    }
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Sound::callback(void* udata, uInt8* stream, int len)
-{
-  Sound* sound = (Sound*)udata;
-  if(sound->myIsEnabled)
-  {
-    // The callback is requesting 8-bit (unsigned) data, but the TIA sound
-    // emulator deals in 16-bit (signed) data
-    // So, we need to convert the pointer and half the length
-    sound->processFragment((Int16*)stream, (uInt32)len >> 1);
-  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

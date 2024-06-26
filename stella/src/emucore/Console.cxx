@@ -43,10 +43,7 @@
 #include "System.hxx"
 #include "TIA.hxx"
 #include "TrackBall.hxx"
-#include "FrameBuffer.hxx"
 #include "OSystem.hxx"
-//#include "Menu.hxx"
-//#include "CommandMenu.hxx"
 #include "Serializable.hxx"
 #include "Version.hxx"
 
@@ -187,8 +184,6 @@ Console::~Console()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::save(Serializer& out) const
 {
-  try
-  {
     // First save state for the system
     if(!mySystem->save(out))
       return false;
@@ -197,11 +192,6 @@ bool Console::save(Serializer& out) const
     if(!(myControllers[0]->save(out) && myControllers[1]->save(out) &&
          mySwitches->save(out)))
       return false;
-  }
-  catch(...)
-  {
-    return false;
-  }
 
   return true;  // success
 }
@@ -209,8 +199,6 @@ bool Console::save(Serializer& out) const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::load(Serializer& in)
 {
-  try
-  {
     // First load state for the system
     if(!mySystem->load(in))
       return false;
@@ -219,11 +207,6 @@ bool Console::load(Serializer& in)
     if(!(myControllers[0]->load(in) && myControllers[1]->load(in) &&
          mySwitches->load(in)))
       return false;
-  }
-  catch(...)
-  {
-    return false;
-  }
 
   return true;  // success
 }
@@ -356,64 +339,16 @@ const uInt32* Console::getPalette(int direction) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::togglePhosphor()
-{
-  const string& phosphor = myProperties.get(Display_Phosphor);
-  int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  bool enable;
-  if(phosphor == "YES")
-  {
-    myProperties.set(Display_Phosphor, "No");
-    enable = false;
-  }
-  else
-  {
-    myProperties.set(Display_Phosphor, "Yes");
-    enable = true;
-  }
-
-  myOSystem->frameBuffer().enablePhosphor(enable, blend);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::setProperties(const Properties& props)
 {
   myProperties = props;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FBInitStatus Console::initializeVideo(bool full)
+void Console::initializeVideo()
 {
-  FBInitStatus fbstatus = kSuccess;
-
-  if(full)
-  {
-    const string& title = string("Stella ") + STELLA_VERSION +
-                   ": \"" + myProperties.get(Cartridge_Name) + "\"";
-    fbstatus = myOSystem->frameBuffer().initialize(title,
-                 myTIA->width() << 1, myTIA->height());
-    if(fbstatus != kSuccess)
-      return fbstatus;
-    setColorLossPalette();
-  }
-
-  bool enable = myProperties.get(Display_Phosphor) == "YES";
-  int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  myOSystem->frameBuffer().enablePhosphor(enable, blend);
+  setColorLossPalette();
   setPalette(myOSystem->settings().getString("palette"));
-
-  // Set the correct framerate based on the format of the ROM
-  // This can be overridden by changing the framerate on the
-  // commandline, but it can't be saved
-  // (ie, framerate is now determined based on number of scanlines).
-  //float framerate = myOSystem->settings().getFloat("framerate");
-  //if(framerate > 0) myFramerate = float(framerate);
-  myOSystem->setFramerate(myFramerate);
-
-  // Make sure auto-frame calculation is only enabled when necessary
-  //myTIA->enableAutoFrame(framerate <= 0);
-
-  return fbstatus;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -428,11 +363,7 @@ void Console::initializeAudio()
 
   myOSystem->sound().close();
   myOSystem->sound().setChannels(sound == "STEREO" ? 2 : 1);
-  myOSystem->sound().setFrameRate(myFramerate);
   myOSystem->sound().open();
-
-  // Make sure auto-frame calculation is only enabled when necessary
-  //myTIA->enableAutoFrame(framerate <= 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -532,14 +463,12 @@ void Console::setTIAProperties()
      myDisplayFormat == "SECAM60")
   {
     // Assume we've got ~262 scanlines (NTSC-like format)
-    //myFramerate = 60.0;
     myFramerate = 59.92;
     myConsoleInfo.InitialFrameRate = "60";
   }
   else
   {
     // Assume we've got ~312 scanlines (PAL-like format)
-    //myFramerate = 50.0;
     myFramerate = 49.92;
     myConsoleInfo.InitialFrameRate = "50";
 
@@ -818,8 +747,6 @@ void Console::setColorLossPalette()
 void Console::setFramerate(float framerate)
 {
   myFramerate = framerate;
-  myOSystem->setFramerate(framerate);
-  myOSystem->sound().setFrameRate(framerate);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -856,11 +783,6 @@ void Console::toggleHMOVE() const
 void Console::toggleFixedColors() const
 {
   myTIA->toggleFixedColors();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::addDebugger()
-{
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -72,12 +72,7 @@ class Event
       MouseAxisXValue, MouseAxisYValue,
       MouseButtonLeftValue, MouseButtonRightValue,
 
-      ChangeState, LoadState, SaveState, TakeSnapshot, Quit,
-      PauseMode, MenuMode, CmdMenuMode, DebuggerMode, LauncherMode,
-      Fry, VolumeDecrease, VolumeIncrease,
-
-      UIUp, UIDown, UILeft, UIRight, UIHome, UIEnd, UIPgUp, UIPgDown,
-      UISelect, UINavPrev, UINavNext, UIOK, UICancel, UIPrevDir,
+      Fry,
 
       LastType
     };
@@ -115,11 +110,6 @@ class Event
       Get the keytable associated with this event
     */
     const bool* getKeys() const { return myKeyTable; }
-
-    /**
-      Set the value associated with the event of the specified type
-    */
-    void setKey(StellaKey key, bool state) { myKeyTable[key] = state; }
 
   private:
     // Array of values associated with each event type
